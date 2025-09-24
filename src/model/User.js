@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import bcrypt, { genSalt } from "bcryptjs";
+import crypto from "crypto";
 const userSchema = Schema(
   {
     name: {
@@ -22,7 +23,7 @@ const userSchema = Schema(
       select: false,
     },
     phonenumber: {
-      type: Number,
+      type: String,
       required: [true, "Phone Number required for registration"],
     },
     usertype: {
@@ -30,6 +31,10 @@ const userSchema = Schema(
       enum: ["adopter", "shelter", "foster organization"],
       default: "adopter",
     },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
+    verifyToken: { type: String },
+    verifyTokenExpiry: { type: Date },
   },
   { timestamps: true }
 );
@@ -37,12 +42,16 @@ const userSchema = Schema(
 userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     const salt = await bcrypt.genSalt(10);
-    this.password = bcrypt.hash(this.password, salt);
+    this.password = await bcrypt.hash(this.password, salt); // ✅ add await
   }
   next();
 });
-userSchema.methods.comparePassword = async function (userPassword) {
-  return await bcrypt.compare(userPassword, this.password);
+
+userSchema.methods.comparePassword = async function (enteredPassword) {
+  console.log(enteredPassword, this.password, "pp");
+
+  return await bcrypt.compare(enteredPassword, this.password);
 };
+
 const User = model("User", userSchema);
 export default User;
