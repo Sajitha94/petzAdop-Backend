@@ -12,13 +12,10 @@ const app = express();
 
 // ===== CORS Configuration =====
 app.use(cors({
-  origin: "*", // Allow all origins; in production, replace "*" with your frontend URL
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  origin: "*", // Allow all origins, replace with your frontend URL in production
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
-
-// Handle preflight OPTIONS requests for all routes
-app.options("*", cors());
 
 // ===== Body Parser =====
 app.use(express.json());
