@@ -1,25 +1,29 @@
 // src/middleware/uploadMiddleware.js
 import multer from "multer";
 import path from "path";
-import fs from "fs";
 
-const uploadDir = path.join(process.cwd(), "uploads"); // absolute path
-
-// Ensure folder exists
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
+// Storage config
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir); // absolute path fixes ENOENT
+    cb(null, "uploads/"); // save files in /uploads folder
   },
   filename: (req, file, cb) => {
-    cb(
-      null,
-      Date.now() + "-" + file.fieldname + path.extname(file.originalname)
-    );
+    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
-export const upload = multer({ storage });
+// File filter (optional)
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype.startsWith("image/") ||
+    file.mimetype.startsWith("video/")
+  ) {
+    cb(null, true);
+  } else {
+    cb(new Error("Invalid file type. Only images/videos allowed!"), false);
+  }
+};
+
+const upload = multer({ storage, fileFilter });
+
+export default upload;

@@ -12,14 +12,11 @@ export const adop_pet_create = async (req, res) => {
       location,
       medical_history,
       description,
+      photo,
+      video,
     } = req.body;
-
+    // Simple validation
     const post_user = req.user.id;
-
-    // Extract uploaded file paths
-    const photo = req.files.photos?.map((file) => file.path); // array of photo paths
-    const video = req.files.video?.[0]?.path; // single video path
-
     if (
       !post_user ||
       !name ||
@@ -54,10 +51,9 @@ export const adop_pet_create = async (req, res) => {
     });
 
     const savedPet = await newPet.save();
-
     res.status(201).json({
       status: "success",
-      message: "Pet Created Successfully",
+      message: "post pet Created Successfully",
       savedPet,
     });
   } catch (err) {
@@ -65,7 +61,6 @@ export const adop_pet_create = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
-
 export const adop_pet_update = async (req, res) => {
   try {
     const petId = req.params.id;
