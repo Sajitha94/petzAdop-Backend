@@ -4,11 +4,11 @@ import connectDB from "./src/config/db.js";
 import { errorHandler } from "./src/middleware/errorHandler.js";
 import authRouter from "./src/routes/authRouter.js";
 import adopPetsRouter from "./src/routes/adopPetsRouter.js";
-
+import cors from "cors";
 dotenv.config();
 const app = express();
 app.use(express.json());
-
+app.use(cors());
 app.get("/", (req, res) => {
   res.send("<h1>Apication is working</h1>");
 });
