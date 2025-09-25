@@ -1,20 +1,20 @@
 import { Router } from "express";
+import multer from "multer";
+import path from "path";
+import { protect } from "../middleware/authMiddleware.js";
 import {
   adop_pet_create,
   adop_pet_delete,
   adop_pet_list,
   adop_pet_update,
 } from "../contoller/adopPetsController.js";
-import { protect } from "../middleware/authMiddleware.js";
-import multer from "multer";
-import path from "path";
 
 const router = Router();
 
-// Multer config
+// Multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Make sure this folder exists
+    cb(null, "uploads/"); // your uploads folder
   },
   filename: (req, file, cb) => {
     cb(
@@ -37,8 +37,8 @@ router.post(
   adop_pet_create
 );
 
-router.put("/:id", protect, adop_pet_update); // Update pet
-router.get("/", protect, adop_pet_list); // List all pets
-router.delete("/:id", protect, adop_pet_delete); // Delete pet
+router.put("/:id", protect, adop_pet_update);
+router.get("/", protect, adop_pet_list);
+router.delete("/:id", protect, adop_pet_delete);
 
 export default router;

@@ -20,6 +20,7 @@ app.use(
 
 // ===== Body Parser =====
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 // ===== Routes =====
 app.get("/", (req, res) => {
