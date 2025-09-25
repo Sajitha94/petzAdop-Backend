@@ -11,11 +11,12 @@ dotenv.config();
 const app = express();
 
 // ===== CORS Configuration =====
-app.use(cors({
-  origin: "*", // Allow all origins, replace with your frontend URL in production
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://petzadop-frontend.onrender.com"],
+    credentials: true,
+  })
+);
 
 // ===== Body Parser =====
 app.use(express.json());
