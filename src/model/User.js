@@ -31,6 +31,10 @@ const userSchema = Schema(
       enum: ["adopter", "shelter", "foster organization"],
       default: "adopter",
     },
+     currentToken: {
+      type: String,
+      default: null,
+    },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     verifyToken: { type: String },

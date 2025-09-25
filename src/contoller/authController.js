@@ -28,6 +28,8 @@ export const register = async (req, res) => {
   });
 
   const token = generateToken({ id: newUser._id, role: newUser.usertype });
+  newUser.currentToken = token;
+  await newUser.save();
   res.status(201).json({
     status: "success",
     message: "User Created Successfully",
@@ -39,7 +41,9 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // find user and include password field
     const user = await User.findOne({ email }).select("+password");
+    console.log(user, "user1");
 
     if (!user) {
       return res.status(400).json({
@@ -57,6 +61,7 @@ export const login = async (req, res) => {
       });
     }
 
+    // check password
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
       return res.status(400).json({
@@ -66,22 +71,26 @@ export const login = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_AUTH_SECRET_KEY, {
-      expiresIn: "2d",
-    });
+    // ✅ generate token with id + usertype
+    const token = generateToken({ id: user._id, role: user.usertype });
+
+    // ✅ save token in DB (invalidate old one)
+    user.currentToken = token;
+    await user.save();
 
     res.status(200).json({
       status: "success",
       message: "User logged in successfully",
       data: {
-        username: user.username,
+        name: user.name,
         email: user.email,
+        role: user.usertype,
         token,
       },
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ status: "error", message: err.message });
+    console.error("Login error:", err.message);
+    res.status(500).json({ status: "error", message: "Server error" });
   }
 };
 

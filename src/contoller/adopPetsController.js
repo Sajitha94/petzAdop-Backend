@@ -3,7 +3,6 @@ import AdopPets from "../model/AdopPets.js";
 export const adop_pet_create = async (req, res) => {
   try {
     const {
-      post_user,
       name,
       age,
       breed,
@@ -17,6 +16,7 @@ export const adop_pet_create = async (req, res) => {
       video,
     } = req.body;
     // Simple validation
+    const post_user = req.user.id;
     if (
       !post_user ||
       !name ||
@@ -86,8 +86,7 @@ export const adop_pet_update = async (req, res) => {
 };
 export const adop_pet_list = async (req, res) => {
   try {
-    const pets = await AdopPets.find()
-      .populate("post_user", "name email") // populate post_user info
+    const pets = await AdopPets.find().populate("post_user", "name email"); // populate post_user info
     //   .populate("reviews"); // optional: populate reviews if needed
 
     res.status(200).json({
