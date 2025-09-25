@@ -1,12 +1,18 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import connectDB from "./src/config/db.js";
 import { errorHandler } from "./src/middleware/errorHandler.js";
 import authRouter from "./src/routes/authRouter.js";
 import adopPetsRouter from "./src/routes/adopPetsRouter.js";
-import cors from "cors";
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -20,7 +26,9 @@ app.use(
 
 // ===== Body Parser =====
 app.use(express.json());
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
+// ===== Serve Uploads Folder =====
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // <-- corrected
 
 // ===== Routes =====
 app.get("/", (req, res) => {
