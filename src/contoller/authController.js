@@ -79,7 +79,7 @@ export const login = async (req, res) => {
     const token = generateToken({
       id: user._id,
       role: user.usertype,
-      name: newUser.name,
+      name: user.name,
     });
 
     // ✅ save token in DB (invalidate old one)
