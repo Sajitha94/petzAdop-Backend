@@ -27,7 +27,11 @@ export const register = async (req, res) => {
     usertype,
   });
 
-  const token = generateToken({ id: newUser._id, role: newUser.usertype });
+  const token = generateToken({
+    id: newUser._id,
+    role: newUser.usertype,
+    name: newUser.name,
+  });
   newUser.currentToken = token;
   await newUser.save();
   res.status(201).json({
@@ -72,7 +76,11 @@ export const login = async (req, res) => {
     }
 
     // ✅ generate token with id + usertype
-    const token = generateToken({ id: user._id, role: user.usertype });
+    const token = generateToken({
+      id: user._id,
+      role: user.usertype,
+      name: newUser.name,
+    });
 
     // ✅ save token in DB (invalidate old one)
     user.currentToken = token;
