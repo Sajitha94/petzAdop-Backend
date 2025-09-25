@@ -10,7 +10,7 @@ const sendMailer = async (to, subject, html) => {
       },
     });
     const mailOptions = {
-      from: `Front Desk App <${process.env.EMAIL}>`,
+      from: `PetzAdop App <${process.env.EMAIL}>`,
       to,
       subject,
       html,
