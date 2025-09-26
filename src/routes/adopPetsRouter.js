@@ -20,9 +20,17 @@ adopPetsRouter.post(
   ]),
   adop_pet_create
 );
+adopPetsRouter.put(
+  "/:id",
+  protect,
+  upload.fields([
+    { name: "photos", maxCount: 5 },
+    { name: "video", maxCount: 1 },
+  ]),
+  adop_pet_update
+);
 
-adopPetsRouter.put("/:id", protect, adop_pet_update);
 adopPetsRouter.get("/", protect, adop_pet_list);
-adopPetsRouter.delete("/:id", protect, adop_pet_delete);
+adopPetsRouter.put("/photo/:id", protect, adop_pet_delete);
 
 export default adopPetsRouter;

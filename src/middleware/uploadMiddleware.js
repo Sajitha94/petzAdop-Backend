@@ -5,6 +5,8 @@ import path from "path";
 // Storage config
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    console.log(cb);
+
     cb(null, "uploads/"); // save files in /uploads folder
   },
   filename: (req, file, cb) => {
