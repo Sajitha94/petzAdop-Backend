@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   adop_pet_create,
   adop_pet_delete,
+  adop_pet_get,
   adop_pet_list,
   adop_pet_update,
 } from "../contoller/adopPetsController.js";
@@ -32,5 +33,6 @@ adopPetsRouter.put(
 
 adopPetsRouter.get("/", protect, adop_pet_list);
 adopPetsRouter.put("/photo/:id", protect, adop_pet_delete);
+adopPetsRouter.get("/:id", adop_pet_get);
 
 export default adopPetsRouter;

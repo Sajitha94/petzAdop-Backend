@@ -99,14 +99,24 @@ export const adop_pet_update = async (req, res) => {
   }
 };
 
+// GET /api/postpet?page=1&limit=5
 export const adop_pet_list = async (req, res) => {
   try {
-    const pets = await AdopPets.find().populate("post_user", "name email"); // populate post_user info
-    //   .populate("reviews"); // optional: populate reviews if needed
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 1;
+
+    const pets = await AdopPets.find()
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("post_user", "name email");
+
+    const total = await AdopPets.countDocuments();
 
     res.status(200).json({
       status: "success",
-      total: pets.length,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
       pets,
     });
   } catch (err) {
@@ -135,6 +145,24 @@ export const adop_pet_delete = async (req, res) => {
     res.status(200).json({ status: "success", message: "Photo deleted", pet });
   } catch (err) {
     console.error("Delete photo error:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// GET /api/postpet/:id
+export const adop_pet_get = async (req, res) => {
+  console.log("sa");
+
+  try {
+    const pet = await AdopPets.findById(req.params.id).populate(
+      "post_user",
+      "name email"
+    );
+    if (!pet) return res.status(404).json({ message: "Pet not found" });
+
+    res.status(200).json({ status: "success", pet });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server Error" });
   }
 };
