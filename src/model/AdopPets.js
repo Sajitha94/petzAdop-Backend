@@ -2,11 +2,7 @@ import { model, Schema } from "mongoose";
 
 const adopPetsSchema = new Schema(
   {
-    post_user: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: [true, "Post user is required"],
-    },
+    post_user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     reviews: [
       {
         type: Schema.Types.ObjectId,
@@ -53,13 +49,8 @@ const adopPetsSchema = new Schema(
       type: String,
       required: [true, "Description is required"],
     },
-    photo: {
-      type: [String],
-      required: [true, "Photo is required"],
-    },
-    video: {
-      type: String,
-    },
+    photo: { type: [String], required: [true, "Photo is required"] },
+    video: { type: String },
   },
   { timestamps: true }
 );

@@ -6,10 +6,23 @@ import {
   adop_pet_update,
 } from "../contoller/adopPetsController.js";
 import { protect } from "../middleware/authMiddleware.js";
+import upload from "../middleware/uploadMiddleware.js";
 
 const adopPetsRouter = Router();
-adopPetsRouter.post("/", protect, adop_pet_create); // Create pet
-adopPetsRouter.put("/:id", protect, adop_pet_update); // Update pet by ID
-adopPetsRouter.get("/", protect, adop_pet_list); // List all pets
+
+// photos = multiple, video = single
+adopPetsRouter.post(
+  "/",
+  protect,
+  upload.fields([
+    { name: "photos", maxCount: 5 },
+    { name: "video", maxCount: 1 },
+  ]),
+  adop_pet_create
+);
+
+adopPetsRouter.put("/:id", protect, adop_pet_update);
+adopPetsRouter.get("/", protect, adop_pet_list);
 adopPetsRouter.delete("/:id", protect, adop_pet_delete);
+
 export default adopPetsRouter;

@@ -12,55 +12,43 @@ export const adop_pet_create = async (req, res) => {
       location,
       medical_history,
       description,
-      photo,
-      video,
+      adoption_fee,
     } = req.body;
-    // Simple validation
-    const post_user = req.user.id;
-    if (
-      !post_user ||
-      !name ||
-      !age ||
-      !breed ||
-      !size ||
-      !gender ||
-      !color ||
-      !location ||
-      !medical_history ||
-      !description ||
-      !photo
-    ) {
-      return res
-        .status(400)
-        .json({ message: "All required fields must be provided" });
-    }
 
-    const newPet = new AdopPets({
-      post_user,
+    // File paths
+    const photo = req.files["photos"]?.map((file) => file.filename) || [];
+    const video = req.files["video"]?.[0]?.filename || null;
+
+    // Save to DB
+    const pet = await AdopPets.create({
       name,
       age,
       breed,
-      size,
-      gender,
+      size: size.toLowerCase(), // schema expects "small|medium|large"
+      gender: gender.toLowerCase(), // schema expects "male|female"
       color,
       location,
       medical_history,
       description,
+      adoption_fee,
       photo,
       video,
+      post_user: req.user.id,
     });
 
-    const savedPet = await newPet.save();
     res.status(201).json({
-      status: "success",
-      message: "post pet Created Successfully",
-      savedPet,
+      success: true,
+      message: "Pet created successfully",
+      pet,
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server Error" });
+  } catch (error) {
+    console.error("Pet Create Error:", error);
+    res
+      .status(500)
+      .json({ success: false, message: error.message || "Server error" });
   }
 };
+
 export const adop_pet_update = async (req, res) => {
   try {
     const petId = req.params.id;
