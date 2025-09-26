@@ -125,7 +125,39 @@ export const adop_pet_list = async (req, res) => {
   }
 };
 
-export const adop_pet_delete = async (req, res) => {
+// controllers/adopPetController.js
+export const adop_pet_deletePet = async (req, res) => {
+  try {
+    const petId = req.params.id;
+
+    const pet = await AdopPets.findById(petId);
+    if (!pet) return res.status(404).json({ message: "Pet not found" });
+
+    // Delete photos
+    pet.photo.forEach((filename) => {
+      const filePath = path.join("uploads", filename);
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    });
+
+    // Delete video
+    if (pet.video) {
+      const videoPath = path.join("uploads", pet.video);
+      if (fs.existsSync(videoPath)) fs.unlinkSync(videoPath);
+    }
+
+    // Delete from DB
+    await AdopPets.findByIdAndDelete(petId);
+
+    res
+      .status(200)
+      .json({ status: "success", message: "Pet deleted successfully" });
+  } catch (err) {
+    console.error("Delete pet error:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const adop_pet_deletePhoto = async (req, res) => {
   try {
     const petId = req.params.id;
     const { filename } = req.body;
@@ -163,6 +195,36 @@ export const adop_pet_get = async (req, res) => {
     res.status(200).json({ status: "success", pet });
   } catch (err) {
     console.error(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// controllers/adopPetController.js
+export const adop_pet_deleteVideo = async (req, res) => {
+  try {
+    const petId = req.params.id;
+    const { filename } = req.body;
+
+    const pet = await AdopPets.findById(petId);
+    if (!pet) return res.status(404).json({ message: "Pet not found" });
+
+    // Remove video from DB
+    if (pet.video === filename) {
+      pet.video = null;
+
+      // Delete file from uploads folder
+      const filePath = path.join("uploads", filename);
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+
+      await pet.save();
+      return res
+        .status(200)
+        .json({ status: "success", message: "Video deleted", pet });
+    } else {
+      return res.status(400).json({ message: "Video not found on this pet" });
+    }
+  } catch (err) {
+    console.error("Delete video error:", err);
     res.status(500).json({ message: "Server Error" });
   }
 };
