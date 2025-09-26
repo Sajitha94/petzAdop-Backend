@@ -183,3 +183,19 @@ export const setPassword = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select(
+      "-password -verifyToken -verifyTokenExpiry -currentToken"
+    );
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "User not found" });
+    }
+    res.json({ status: "success", data: user });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: "Server error" });
+  }
+};

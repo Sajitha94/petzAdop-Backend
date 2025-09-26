@@ -2,6 +2,7 @@ import { Router } from "express";
 import { protect } from "../middleware/authMiddleware.js";
 import {
   forgotPassword,
+  getProfile,
   login,
   register,
   setPassword,
@@ -14,4 +15,5 @@ authRouter.post("/login", login);
 authRouter.post("/verify", verifyUser);
 authRouter.post("/setPassword", setPassword);
 authRouter.post("/forgotPassword", forgotPassword);
+authRouter.get("/profile", protect, getProfile);
 export default authRouter;
