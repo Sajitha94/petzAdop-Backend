@@ -26,12 +26,17 @@ const userSchema = Schema(
       type: String,
       required: [true, "Phone Number required for registration"],
     },
+    location: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     usertype: {
       type: String,
       enum: ["adopter", "shelter", "foster organization"],
       default: "adopter",
     },
-     currentToken: {
+    currentToken: {
       type: String,
       default: null,
     },

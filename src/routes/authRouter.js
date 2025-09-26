@@ -6,6 +6,7 @@ import {
   login,
   register,
   setPassword,
+  updateProfile,
   verifyUser,
 } from "../contoller/authController.js";
 
@@ -16,4 +17,5 @@ authRouter.post("/verify", verifyUser);
 authRouter.post("/setPassword", setPassword);
 authRouter.post("/forgotPassword", forgotPassword);
 authRouter.get("/profile", protect, getProfile);
+authRouter.put("/update/:id", protect, updateProfile);
 export default authRouter;
