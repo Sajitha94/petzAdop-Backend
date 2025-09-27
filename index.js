@@ -14,7 +14,11 @@ app.use("/uploads", express.static("uploads"));
 // ===== CORS Configuration =====
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://petzadop-frontend.onrender.com"],
+    origin: [
+      "http://localhost:5173",
+      "https://petzadop-frontend.onrender.com",
+      "https://petzadop-frontend.netlify.app/",
+    ],
     credentials: true,
   })
 );
