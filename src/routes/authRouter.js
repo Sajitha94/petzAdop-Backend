@@ -24,5 +24,10 @@ authRouter.post("/setPassword", setPassword);
 authRouter.post("/forgotPassword", forgotPassword);
 authRouter.get("/profile/:id", getProfileById);
 authRouter.get("/foster-users", getFosterUsers);
-authRouter.put("/update/:id", protect, updateProfile);
+authRouter.put(
+  "/update/:id",
+  protect,
+  upload.fields([{ name: "profilePictures", maxCount: 5 }]),
+  updateProfile
+);
 export default authRouter;

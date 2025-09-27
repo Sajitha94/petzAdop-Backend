@@ -227,6 +227,18 @@ export const updateProfile = async (req, res) => {
 
     if (password) user.password = password; // hashed via pre-save middleware
 
+    if (req.files && req.files.profilePictures) {
+      const profilePics = Array.isArray(req.files.profilePictures)
+        ? req.files.profilePictures.map((file) => file.filename)
+        : [req.files.profilePictures.filename];
+
+      // Option 1: Replace old images completely
+      user.profilePictures = profilePics;
+
+      // Option 2: Append new images instead of replacing
+      // user.profilePictures = [...user.profilePictures, ...profilePics];
+    }
+
     await user.save();
     res.json({
       status: "success",
