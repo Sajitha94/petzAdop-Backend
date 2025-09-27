@@ -18,7 +18,7 @@ export const register = async (req, res) => {
   }
   const profilePics =
     req.files && req.files.profilePictures
-      ? req.files.profilePictures.map((file) => `/uploads/${file.filename}`)
+      ? req.files.profilePictures.map((file) => file.filename) // remove /uploads/
       : [];
 
   const newUser = await User.create({
@@ -235,6 +235,30 @@ export const updateProfile = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
+    res.status(500).json({ status: "error", message: "Server error" });
+  }
+};
+
+// controllers/authController.js
+export const getFosterUsers = async (req, res) => {
+  try {
+    const fosterUsers = await User.find({
+      usertype: "foster organization",
+    }).select("-password -verifyToken -verifyTokenExpiry -currentToken");
+
+    if (!fosterUsers || fosterUsers.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "No foster organization users found",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: fosterUsers,
+    });
+  } catch (err) {
+    console.error("Error fetching foster users:", err);
     res.status(500).json({ status: "error", message: "Server error" });
   }
 };

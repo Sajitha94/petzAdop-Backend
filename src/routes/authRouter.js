@@ -2,6 +2,7 @@ import { Router } from "express";
 import { protect } from "../middleware/authMiddleware.js";
 import {
   forgotPassword,
+  getFosterUsers,
   getProfileById,
   login,
   register,
@@ -22,6 +23,6 @@ authRouter.post("/verify", verifyUser);
 authRouter.post("/setPassword", setPassword);
 authRouter.post("/forgotPassword", forgotPassword);
 authRouter.get("/profile/:id", getProfileById);
-
+authRouter.get("/foster-users", getFosterUsers);
 authRouter.put("/update/:id", protect, updateProfile);
 export default authRouter;
