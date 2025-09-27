@@ -16,7 +16,7 @@ authRouter.post("/login", login);
 authRouter.post("/verify", verifyUser);
 authRouter.post("/setPassword", setPassword);
 authRouter.post("/forgotPassword", forgotPassword);
-authRouter.get("/profile/:id", protect, getProfileById);
+authRouter.get("/profile/:id", getProfileById);
 
 authRouter.put("/update/:id", protect, updateProfile);
 export default authRouter;
