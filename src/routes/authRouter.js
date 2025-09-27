@@ -9,9 +9,14 @@ import {
   updateProfile,
   verifyUser,
 } from "../contoller/authController.js";
+import upload from "../middleware/uploadMiddleware.js";
 
 const authRouter = Router();
-authRouter.post("/register", register);
+authRouter.post(
+  "/register",
+  upload.fields([{ name: "profilePictures", maxCount: 5 }]),
+  register
+);
 authRouter.post("/login", login);
 authRouter.post("/verify", verifyUser);
 authRouter.post("/setPassword", setPassword);

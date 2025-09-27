@@ -6,7 +6,6 @@ import nodemailer from "nodemailer";
 import sendMailer from "../utils/sendMailer.js";
 import generateToken from "../utils/generateToken.js";
 export const register = async (req, res) => {
-  console.log(req.body);
   const { name, email, password, phonenumber, location, usertype } = req.body;
 
   const user = await User.findOne({ email });
@@ -17,6 +16,10 @@ export const register = async (req, res) => {
       message: "User Already Exists",
     });
   }
+  const profilePics =
+    req.files && req.files.profilePictures
+      ? req.files.profilePictures.map((file) => `/uploads/${file.filename}`)
+      : [];
 
   const newUser = await User.create({
     name,
@@ -25,6 +28,7 @@ export const register = async (req, res) => {
     phonenumber,
     location,
     usertype,
+    profilePictures: profilePics,
   });
 
   const token = generateToken({
@@ -204,10 +208,7 @@ export const getProfileById = async (req, res) => {
   }
 };
 
-
 export const updateProfile = async (req, res) => {
- 
-
   try {
     const { id } = req.params;
     const { name, email, password, phonenumber, location, usertype } = req.body;

@@ -40,6 +40,11 @@ const userSchema = Schema(
       type: String,
       default: null,
     },
+    profilePictures: {
+      type: [String], // store multiple image URLs
+      default: [],
+    },
+
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     verifyToken: { type: String },
