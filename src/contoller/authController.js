@@ -184,29 +184,39 @@ export const setPassword = async (req, res) => {
   }
 };
 
-export const getProfile = async (req, res) => {
+// controllers/authController.js
+export const getProfileById = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select(
+    const user = await User.findById(req.params.id).select(
       "-password -verifyToken -verifyTokenExpiry -currentToken"
     );
+
     if (!user) {
       return res
         .status(404)
         .json({ status: "error", message: "User not found" });
     }
+
     res.json({ status: "success", data: user });
   } catch (err) {
+    console.error("Get profile error:", err);
     res.status(500).json({ status: "error", message: "Server error" });
   }
 };
 
+
 export const updateProfile = async (req, res) => {
+ 
+
   try {
     const { id } = req.params;
     const { name, email, password, phonenumber, location, usertype } = req.body;
 
     const user = await User.findById(id).select("+password");
-    if (!user) return res.status(404).json({ status: "error", message: "User not found" });
+    if (!user)
+      return res
+        .status(404)
+        .json({ status: "error", message: "User not found" });
 
     user.name = name || user.name;
     user.email = email || user.email;
@@ -217,7 +227,11 @@ export const updateProfile = async (req, res) => {
     if (password) user.password = password; // hashed via pre-save middleware
 
     await user.save();
-    res.json({ status: "success", message: "Profile updated successfully", data: user });
+    res.json({
+      status: "success",
+      message: "Profile updated successfully",
+      data: user,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ status: "error", message: "Server error" });
