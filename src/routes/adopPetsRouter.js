@@ -33,7 +33,7 @@ adopPetsRouter.put(
   adop_pet_update
 );
 
-adopPetsRouter.get("/", protect, adop_pet_list);
+adopPetsRouter.get("/", adop_pet_list);
 // routes/adopPetsRouter.js
 adopPetsRouter.delete("/:id", protect, adop_pet_deletePet); // ✅ new route
 
