@@ -43,7 +43,6 @@ export const protect = async (req, res, next) => {
       role: user.usertype,
     };
 
-    console.log("Authenticated user:", req.user);
 
     next();
   } catch (err) {

@@ -51,7 +51,6 @@ export const login = async (req, res) => {
 
     // find user and include password field
     const user = await User.findOne({ email }).select("+password");
-    console.log(user, "user1");
 
     if (!user) {
       return res.status(400).json({
@@ -112,7 +111,6 @@ export const forgotPassword = async (req, res) => {
     let user = await User.findOne({ email });
 
     if (!user) {
-      console.log(user);
       return res.status(400).json({
         status: "error",
         message: "User does not exist with this email.Please Register!",
@@ -136,28 +134,24 @@ export const forgotPassword = async (req, res) => {
     );
     res.json({ message: "Verification code sent to email" });
   } catch (err) {
-    console.log(err);
   }
 };
 
 export const verifyUser = async (req, res) => {
   try {
     const { email, token } = req.body;
-    console.log(req.body, "n");
 
     const user = await User.findOne({
       email,
       verifyToken: token,
       verifyTokenExpiry: { $gt: Date.now() },
     });
-    console.log(user, "us");
 
     if (!user)
       return res.status(400).json({ message: "Invalid or expired token" });
 
     res.json({ message: "Token verified. You can now set your password." });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: err.message });
   }
 };

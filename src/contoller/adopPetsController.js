@@ -17,7 +17,6 @@ export const adop_pet_create = async (req, res) => {
     } = req.body;
 
     // File paths
-    console.log(req.file, "req.file");
 
     const photo = req.files["photos"]?.map((file) => file.filename) || [];
     const video = req.files["video"]?.[0]?.filename || null;
@@ -183,8 +182,6 @@ export const adop_pet_deletePhoto = async (req, res) => {
 
 // GET /api/postpet/:id
 export const adop_pet_get = async (req, res) => {
-  console.log("sa");
-
   try {
     const pet = await AdopPets.findById(req.params.id).populate(
       "post_user",
@@ -245,37 +242,49 @@ export const adop_pet_search = async (req, res) => {
 
     const query = {};
 
-    if (search) {
-      query.name = { $regex: search, $options: "i" };
+    // Free-text search
+    if (search?.trim()) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { breed: { $regex: search, $options: "i" } },
+        { color: { $regex: search, $options: "i" } },
+      ];
     }
 
-    if (location) {
+    if (location?.trim()) {
       query.location = { $regex: location, $options: "i" };
     }
 
-    if (breed) {
-      query.breed = { $in: breed.split(",") };
+    if (breed?.trim()) {
+      query.breed = { $in: breed.split(",").filter(Boolean) };
     }
 
-    if (size) {
-      query.size = { $in: size.split(",") };
+    if (size?.trim()) {
+      query.size = { $in: size.split(",").filter(Boolean) };
     }
 
-    if (minAge || maxAge) {
-      query.age = {};
-      if (minAge) query.age.$gte = parseInt(minAge);
-      if (maxAge) query.age.$lte = parseInt(maxAge);
-    }
+    // Age filter only if schema changes to Number
+    // (currently your age is a string, so skip minAge/maxAge for now)
+    // if (minAge || maxAge) { ... }
 
-    const skip = (page - 1) * limit;
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 6;
+    const skip = (pageNum - 1) * limitNum;
 
-    // ✅ FIX: Use AdopPets model instead of Pet
-    const pets = await AdopPets.find(query).skip(skip).limit(parseInt(limit));
+    const pets = await AdopPets.find(query)
+      .skip(skip)
+      .limit(limitNum)
+      .populate("post_user", "name email");
+
     const total = await AdopPets.countDocuments(query);
 
     res.json({
+      status: "success",
       pets,
-      totalPages: Math.ceil(total / limit),
+      total,
+      totalPages: Math.ceil(total / limitNum),
+      page: pageNum,
     });
   } catch (err) {
     console.error("Search API error:", err);
