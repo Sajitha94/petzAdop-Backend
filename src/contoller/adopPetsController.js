@@ -124,7 +124,6 @@ export const adop_pet_list = async (req, res) => {
   }
 };
 
-
 // GET /api/postpet/breeds
 export const adop_pet_getBreeds = async (req, res) => {
   try {
@@ -269,22 +268,28 @@ export const adop_pet_search = async (req, res) => {
       ];
     }
 
+    // Location
     if (location?.trim()) {
       query.location = { $regex: location, $options: "i" };
     }
 
+    // Breed filter (only if passed)
     if (breed?.trim()) {
       query.breed = { $in: breed.split(",").filter(Boolean) };
     }
-
-    if (size?.trim()) {
+        if (size?.trim()) {
       query.size = { $in: size.split(",").filter(Boolean) };
     }
 
-    // Age filter only if schema changes to Number
-    // (currently your age is a string, so skip minAge/maxAge for now)
-    // if (minAge || maxAge) { ... }
+    // Age filter (since age is a Number in schema)
+    const ageFilter = {};
+    if (minAge) ageFilter.$gte = parseInt(minAge);
+    if (maxAge) ageFilter.$lte = parseInt(maxAge);
+    if (Object.keys(ageFilter).length > 0) {
+      query.age = ageFilter;
+    }
 
+    // Pagination
     const pageNum = parseInt(page) || 1;
     const limitNum = parseInt(limit) || 6;
     const skip = (pageNum - 1) * limitNum;

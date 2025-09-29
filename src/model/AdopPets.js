@@ -16,7 +16,7 @@ const adopPetsSchema = new Schema(
       minlength: 3,
     },
     age: {
-      type: String,
+      type: Number,
       required: [true, "Age is required for registration"],
     },
     breed: {
