@@ -228,3 +228,57 @@ export const adop_pet_deleteVideo = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+// GET /api/postpet/search
+export const adop_pet_search = async (req, res) => {
+  try {
+    const {
+      search,
+      location,
+      breed,
+      size,
+      minAge,
+      maxAge,
+      page = 1,
+      limit = 6,
+    } = req.query;
+
+    const query = {};
+
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
+
+    if (location) {
+      query.location = { $regex: location, $options: "i" };
+    }
+
+    if (breed) {
+      query.breed = { $in: breed.split(",") };
+    }
+
+    if (size) {
+      query.size = { $in: size.split(",") };
+    }
+
+    if (minAge || maxAge) {
+      query.age = {};
+      if (minAge) query.age.$gte = parseInt(minAge);
+      if (maxAge) query.age.$lte = parseInt(maxAge);
+    }
+
+    const skip = (page - 1) * limit;
+
+    // ✅ FIX: Use AdopPets model instead of Pet
+    const pets = await AdopPets.find(query).skip(skip).limit(parseInt(limit));
+    const total = await AdopPets.countDocuments(query);
+
+    res.json({
+      pets,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (err) {
+    console.error("Search API error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};

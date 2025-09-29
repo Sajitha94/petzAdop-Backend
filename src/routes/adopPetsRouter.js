@@ -6,6 +6,7 @@ import {
   adop_pet_deleteVideo,
   adop_pet_get,
   adop_pet_list,
+  adop_pet_search,
   adop_pet_update,
 } from "../contoller/adopPetsController.js";
 import { protect } from "../middleware/authMiddleware.js";
@@ -40,5 +41,6 @@ adopPetsRouter.delete("/:id", protect, adop_pet_deletePet); // ✅ new route
 adopPetsRouter.put("/photo/:id", protect, adop_pet_deletePhoto);
 adopPetsRouter.put("/video/:id", protect, adop_pet_deleteVideo);
 adopPetsRouter.get("/:id", adop_pet_get);
+adopPetsRouter.get("/search", adop_pet_search);
 
 export default adopPetsRouter;
