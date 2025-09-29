@@ -124,6 +124,23 @@ export const adop_pet_list = async (req, res) => {
   }
 };
 
+
+// GET /api/postpet/breeds
+export const adop_pet_getBreeds = async (req, res) => {
+  try {
+    // Get unique breed values
+    const breeds = await AdopPets.distinct("breed");
+
+    res.status(200).json({
+      status: "success",
+      breeds,
+    });
+  } catch (err) {
+    console.error("Get breeds error:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 // controllers/adopPetController.js
 export const adop_pet_deletePet = async (req, res) => {
   try {

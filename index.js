@@ -5,6 +5,7 @@ import { errorHandler } from "./src/middleware/errorHandler.js";
 import authRouter from "./src/routes/authRouter.js";
 import adopPetsRouter from "./src/routes/adopPetsRouter.js";
 import cors from "cors";
+import chatRouter from "./src/routes/chatRouter.js";
 
 dotenv.config();
 
@@ -41,7 +42,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/postpet", adopPetsRouter);
-
+app.use("/api/chat", chatRouter);
 // ===== Error Handling =====
 app.use(errorHandler);
 
