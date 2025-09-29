@@ -51,6 +51,18 @@ const adopPetsSchema = new Schema(
     },
     photo: { type: [String], required: [true, "Photo is required"] },
     video: { type: String },
+    requests: [
+      {
+        adopter_email: { type: String, required: true },
+        status: {
+          type: String,
+          enum: ["pending", "approved", "rejected"], // ✅ approved, not accepted
+          default: "pending",
+        },
+
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true }
 );

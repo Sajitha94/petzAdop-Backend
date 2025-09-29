@@ -1,6 +1,7 @@
 import AdopPets from "../model/AdopPets.js";
 import fs from "fs";
 import path from "path";
+import sendMailer from "../utils/sendMailer.js";
 export const adop_pet_create = async (req, res) => {
   try {
     const {
@@ -37,6 +38,16 @@ export const adop_pet_create = async (req, res) => {
       video,
       post_user: req.user.id,
     });
+
+    const subject = "Pet Created Successfully";
+    const html = `
+      <h2>Hi ${req.user.name},</h2>
+      <p>Your pet <b>${name}</b> has been added to PetzAdop.</p>
+      <p><b>Breed:</b> ${breed}</p>
+      <p><b>Location:</b> ${location}</p>
+      <p>Thank you for using PetzAdop 🐾</p>
+    `;
+    await sendMailer(req.user.email, subject, html);
 
     res.status(201).json({
       success: true,
@@ -277,7 +288,7 @@ export const adop_pet_search = async (req, res) => {
     if (breed?.trim()) {
       query.breed = { $in: breed.split(",").filter(Boolean) };
     }
-        if (size?.trim()) {
+    if (size?.trim()) {
       query.size = { $in: size.split(",").filter(Boolean) };
     }
 
@@ -311,5 +322,130 @@ export const adop_pet_search = async (req, res) => {
   } catch (err) {
     console.error("Search API error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+// POST /api/postpet/request
+
+export const adop_pet_request = async (req, res) => {
+  try {
+    const { petId } = req.body;
+
+    if (!petId) return res.status(400).json({ message: "petId is required" });
+
+    const pet = await AdopPets.findById(petId).populate(
+      "post_user",
+      "name email"
+    );
+    if (!pet) return res.status(404).json({ message: "Pet not found" });
+
+    // Take email from logged-in user
+    const adopterEmail = req.user.email; // <-- from token
+
+    // Save request in DB
+    pet.requests.push({ adopter_email: adopterEmail, status: "pending" });
+    await pet.save();
+
+    // Send email to shelter
+    const shelterEmail = pet.post_user.email;
+    const subject = `Adoption Request for ${pet.name}`;
+    const html = `
+      <p>Hello ${pet.post_user.name},</p>
+      <p>You have a new adoption request for <b>${pet.name}</b>.</p>
+      <p>Adopter's email: ${adopterEmail}</p>
+      <p>Status: Pending</p>
+      <p>Please contact the adopter to proceed.</p>
+      <p>Regards, <br/>PetzAdop App</p>
+    `;
+    await sendMailer(shelterEmail, subject, html);
+
+    res.status(200).json({
+      status: "success",
+      message: `Request sent and recorded. Shelter notified at ${shelterEmail}`,
+      petId: pet._id,
+    });
+  } catch (err) {
+    console.error("Error sending adoption request:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+// GET /api/postpet/requests
+export const adop_pet_getRequests = async (req, res) => {
+  try {
+    const shelterId = req.user.id;
+
+    // Find all pets of this shelter
+    const pets = await AdopPets.find({ post_user: shelterId }).select(
+      "name requests"
+    );
+
+    res.status(200).json({ status: "success", pets });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+// POST /api/postpet/request/:petId/:requestId
+export const adop_pet_updateRequestStatus = async (req, res) => {
+  try {
+    const { petId, requestId } = req.params;
+    const { status } = req.body; // 'approved' or 'rejected'
+
+    if (!["approved", "rejected"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const pet = await AdopPets.findById(petId).populate(
+      "post_user",
+      "name email"
+    );
+    if (!pet) return res.status(404).json({ message: "Pet not found" });
+
+    // Find request
+    const request = pet.requests.id(requestId);
+    if (!request) return res.status(404).json({ message: "Request not found" });
+
+    // Update status
+    request.status = status;
+    await pet.save();
+
+    // Send email to adopter
+    const subject = `Your adoption request for ${pet.name} is ${status}`;
+    const html = `
+      <p>Hello,</p>
+      <p>Your adoption request for <b>${pet.name}</b> has been <b>${status}</b> by the shelter.</p>
+      <p>Regards, <br/>PetzAdop App</p>
+    `;
+    await sendMailer(request.adopter_email, subject, html);
+
+    // If approved, delete the pet post
+    if (status === "approved") {
+      // Delete photos
+      pet.photo.forEach((filename) => {
+        const filePath = path.join("uploads", filename);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      });
+
+      // Delete video
+      if (pet.video) {
+        const videoPath = path.join("uploads", pet.video);
+        if (fs.existsSync(videoPath)) fs.unlinkSync(videoPath);
+      }
+
+      // Delete from DB
+      await AdopPets.findByIdAndDelete(petId);
+    }
+
+    res.status(200).json({
+      status: "success",
+      message:
+        status === "approved"
+          ? "Request approved, pet deleted and adopter notified"
+          : "Request rejected and adopter notified",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
