@@ -7,6 +7,7 @@ import {
   login,
   register,
   setPassword,
+  toggleFavorite,
   updateProfile,
   verifyUser,
 } from "../contoller/authController.js";
@@ -22,6 +23,7 @@ authRouter.post("/login", login);
 authRouter.post("/verify", verifyUser);
 authRouter.post("/setPassword", setPassword);
 authRouter.post("/forgotPassword", forgotPassword);
+authRouter.post("/toggle", protect, toggleFavorite);
 authRouter.get("/profile/:id", getProfileById);
 authRouter.get("/foster-users", getFosterUsers);
 authRouter.put(

@@ -133,8 +133,7 @@ export const forgotPassword = async (req, res) => {
       `<p>Your code is: <b>${token}</b></p>`
     );
     res.json({ message: "Verification code sent to email" });
-  } catch (err) {
-  }
+  } catch (err) {}
 };
 
 export const verifyUser = async (req, res) => {
@@ -185,9 +184,9 @@ export const setPassword = async (req, res) => {
 // controllers/authController.js
 export const getProfileById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select(
-      "-password -verifyToken -verifyTokenExpiry -currentToken"
-    );
+    const user = await User.findById(req.params.id)
+      .populate("favorites")
+      .select("-password -verifyToken -verifyTokenExpiry -currentToken");
 
     if (!user) {
       return res
@@ -266,5 +265,36 @@ export const getFosterUsers = async (req, res) => {
   } catch (err) {
     console.error("Error fetching foster users:", err);
     res.status(500).json({ status: "error", message: "Server error" });
+  }
+};
+
+// controllers/favoriteController.js
+
+export const toggleFavorite = async (req, res) => {
+  try {
+    const { petId } = req.body;
+    const userId = req.user.id;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isFavorite = user.favorites.includes(petId);
+
+    if (isFavorite) {
+      user.favorites = user.favorites.filter((id) => id.toString() !== petId);
+    } else {
+      user.favorites.push(petId);
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: isFavorite ? "Removed from favorites" : "Added to favorites",
+      favorites: user.favorites,
+    });
+  } catch (err) {
+    console.error("Favorite toggle error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 };

@@ -44,7 +44,7 @@ const userSchema = Schema(
       type: [String], // store multiple image URLs
       default: [],
     },
-
+    favorites: [{ type: Schema.Types.ObjectId, ref: "AdopPets" }],
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     verifyToken: { type: String },
@@ -62,7 +62,6 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.comparePassword = async function (enteredPassword) {
-
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
