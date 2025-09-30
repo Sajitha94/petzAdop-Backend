@@ -40,9 +40,9 @@ export const protect = async (req, res, next) => {
       id: user._id,
       name: user.name,
       email: user.email,
+      usertype: user.usertype,
       role: user.usertype,
     };
-
 
     next();
   } catch (err) {

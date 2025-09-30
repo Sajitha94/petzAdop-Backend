@@ -12,7 +12,7 @@ import {
   adop_pet_search,
   adop_pet_update,
   adop_pet_updateRequestStatus,
-} from "../contoller/adopPetsController.js";
+} from "../controller/adopPetsController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
 

@@ -3,7 +3,7 @@ import {
   chat_create,
   get_all_chat,
   get_chat,
-} from "../contoller/chatController.js";
+} from "../controller/chatController.js";
 const chatRouter = Router();
 chatRouter.post("/", chat_create);
 chatRouter.get("/:userId", get_all_chat);

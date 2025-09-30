@@ -10,7 +10,7 @@ import {
   toggleFavorite,
   updateProfile,
   verifyUser,
-} from "../contoller/authController.js";
+} from "../controller/authController.js";
 import upload from "../middleware/uploadMiddleware.js";
 
 const authRouter = Router();
