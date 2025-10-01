@@ -15,10 +15,16 @@ const fosterPetsSchema = new Schema(
     video: { type: String, default: null },
 
     fosterOrgId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-
+start_date: { type: Date }, // <--- new
+    end_date: { type: Date },   // <--- new
     requests: [
       {
-        requester: { type: Schema.Types.ObjectId, ref: "User", required: true },
+        forster_parent_ID: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        forster_parent_email: { type: String, required: true },
         status: {
           type: String,
           enum: ["pending", "accepted", "rejected"],

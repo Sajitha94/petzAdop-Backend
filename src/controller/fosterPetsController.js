@@ -18,33 +18,37 @@ export const createFosterPet = async (req, res) => {
       medical_history,
       description,
       fosterOrgId,
+      start_date,
+      end_date,
     } = req.body;
 
     const photos = req.files?.photos?.map((f) => f.filename) || [];
     const video = req.files?.video ? req.files.video[0].filename : null;
 
-  const newPet = new FosterPets({
-  name,
-  age,
-  breed,
-  size,
-  gender,
-  color,
-  location,
-  medical_history,
-  description,
-  photos,
-  video,
-  fosterOrgId,
-  requests: [
-    {
-      requester: user.id, // string or ObjectId, Mongoose will cast
-      status: "pending",  // default
-      requestedAt: new Date()
-    }
-  ],
-});
-
+    const newPet = new FosterPets({
+      name,
+      age,
+      breed,
+      size,
+      gender,
+      color,
+      location,
+      medical_history,
+      description,
+      photos,
+      video,
+      fosterOrgId,
+      start_date,
+      end_date,
+      requests: [
+        {
+          forster_parent_ID: user.id,
+          forster_parent_email: user.email, // string or ObjectId, Mongoose will cast
+          status: "pending", // default
+          requestedAt: new Date(),
+        },
+      ],
+    });
 
     await newPet.save();
 
@@ -63,7 +67,6 @@ export const getFosterPetsByOrg = async (req, res) => {
   try {
     const { orgId } = req.params;
     const pets = await FosterPets.find({ fosterOrgId: orgId }).populate(
-      "submittedBy",
       "name email"
     );
     res.json({ status: "success", data: pets });
