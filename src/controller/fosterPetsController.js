@@ -1,8 +1,10 @@
 // controllers/fosterPetsController.js
 import FosterPets from "../model/FosterPets.js";
 import mongoose from "mongoose";
+import sendMailer from "../utils/sendMailer.js";
 
 // POST: Create foster pet
+
 export const createFosterPet = async (req, res) => {
   try {
     const user = req.user;
@@ -43,8 +45,8 @@ export const createFosterPet = async (req, res) => {
       requests: [
         {
           forster_parent_ID: user.id,
-          forster_parent_email: user.email, // string or ObjectId, Mongoose will cast
-          status: "pending", // default
+          forster_parent_email: user.email,
+          status: "pending",
           requestedAt: new Date(),
         },
       ],
@@ -52,8 +54,21 @@ export const createFosterPet = async (req, res) => {
 
     await newPet.save();
 
+    // Send email to the user who created the foster pet
+    const html = `
+      <h3>Hello ${user.name || "User"}!</h3>
+      <p>Your foster pet <strong>${name}</strong> has been successfully created.</p>
+      <p>Foster period: ${
+        start_date ? new Date(start_date).toDateString() : "N/A"
+      } 
+      to ${end_date ? new Date(end_date).toDateString() : "N/A"}</p>
+      <p>Thank you for using PetzAdop!</p>
+    `;
+
+    await sendMailer(user.email, "Foster Pet Created Successfully", html);
+
     res.status(201).json({
-      message: "Foster pet posted successfully",
+      message: "Foster pet posted successfully and email sent",
       pet: newPet,
     });
   } catch (err) {
@@ -66,9 +81,13 @@ export const createFosterPet = async (req, res) => {
 export const getFosterPetsByOrg = async (req, res) => {
   try {
     const { orgId } = req.params;
-    const pets = await FosterPets.find({ fosterOrgId: orgId }).populate(
-      "name email"
+
+    // Fetch pets by orgId
+    const pets = await FosterPets.find({ fosterOrgId: orgId }).select(
+      "name age breed gender location photos requests start_date end_date"
     );
+
+    // The `requests` array includes `forster_parent_email`
     res.json({ status: "success", data: pets });
   } catch (err) {
     console.error(err);
@@ -103,6 +122,7 @@ export const requestAdoption = async (req, res) => {
   }
 };
 // POST: Update adoption request status
+
 export const updateRequestStatus = async (req, res) => {
   try {
     const { petId, requestId } = req.params;
@@ -120,6 +140,27 @@ export const updateRequestStatus = async (req, res) => {
 
     request.status = status;
     await pet.save();
+
+    // Prepare email content
+    const html = `
+      <h3>Hello!</h3>
+      <p>Your adoption request for pet <strong>${
+        pet.name
+      }</strong> has been <strong>${status.toUpperCase()}</strong>.</p>
+      ${
+        status === "accepted"
+          ? `<p>Foster period: ${pet.start_date?.toDateString()} to ${pet.end_date?.toDateString()}</p>`
+          : ""
+      }
+      <p>Thank you for using PetzAdop!</p>
+    `;
+
+    // Send email
+    await sendMailer(
+      request.forster_parent_email,
+      `Adoption Request ${status}`,
+      html
+    );
 
     res.status(200).json({ message: `Request ${status}`, pet });
   } catch (err) {
