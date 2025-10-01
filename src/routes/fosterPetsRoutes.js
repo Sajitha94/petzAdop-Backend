@@ -5,6 +5,8 @@ import path from "path";
 import {
   createFosterPet,
   getFosterPetsByOrg,
+  requestAdoption,
+  updateRequestStatus,
 } from "../controller/fosterPetsController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -25,7 +27,14 @@ fosterPetsRouter.post(
   upload.fields([{ name: "photos" }, { name: "video" }]),
   createFosterPet
 );
+fosterPetsRouter.post("/request", protect, requestAdoption);
 
+// POST update request status
+fosterPetsRouter.post(
+  "/request/:petId/:requestId",
+  protect,
+  updateRequestStatus
+);
 // GET foster pets by organization
 fosterPetsRouter.get("/:orgId", getFosterPetsByOrg);
 

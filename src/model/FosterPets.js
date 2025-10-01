@@ -14,11 +14,21 @@ const fosterPetsSchema = new Schema(
     photos: { type: [String], default: [] },
     video: { type: String, default: null },
 
-    submittedBy: { type: Schema.Types.ObjectId, ref: "User", required: true }, // user who submitted
-    fosterOrgId: { type: Schema.Types.ObjectId, ref: "User", required: true }, // foster organization ID
+    fosterOrgId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+
+    requests: [
+      {
+        requester: { type: Schema.Types.ObjectId, ref: "User", required: true },
+        status: {
+          type: String,
+          enum: ["pending", "accepted", "rejected"],
+          default: "pending",
+        },
+        requestedAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true }
 );
 
-const FosterPets = model("FosterPets", fosterPetsSchema);
-export default FosterPets;
+export default model("FosterPets", fosterPetsSchema);
