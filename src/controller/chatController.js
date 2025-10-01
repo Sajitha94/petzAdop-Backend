@@ -86,6 +86,15 @@ export const get_all_chat = async (req, res) => {
       { $sort: { lastTimestamp: -1 } },
     ]);
 
+    for (let convo of messages) {
+      const unreadCount = await Chat.countDocuments({
+        sender: convo.userId,
+        receiver: userId,
+        status: { $ne: "read" },
+      });
+      convo.unreadCount = unreadCount;
+    }
+
     res.status(200).json({
       success: true,
       messages,
@@ -100,12 +109,16 @@ export const get_chat = async (req, res) => {
   try {
     const { senderId, receiverId } = req.params;
 
+    await Chat.updateMany(
+      { sender: receiverId, receiver: senderId, status: { $ne: "read" } },
+      { $set: { status: "read" } }
+    );
     const messages = await Chat.find({
       $or: [
         { sender: senderId, receiver: receiverId },
         { sender: receiverId, receiver: senderId },
       ],
-    });
+    }).sort({ timestamp: 1 });
 
     res.status(200).json({
       success: true,
@@ -114,5 +127,65 @@ export const get_chat = async (req, res) => {
   } catch (error) {
     console.error("Get Conversation Error:", error);
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const get_unread_counts = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const counts = await Chat.aggregate([
+      {
+        $match: {
+          receiver: new mongoose.Types.ObjectId(userId),
+          status: { $ne: "read" },
+        },
+      },
+      {
+        $group: {
+          _id: "$sender",
+          unreadCount: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "userInfo",
+        },
+      },
+      { $unwind: "$userInfo" },
+      {
+        $project: {
+          userId: "$userInfo._id",
+          name: "$userInfo.name",
+          unreadCount: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      counts,
+    });
+  } catch (error) {
+    console.error("Unread Count Error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const mark_as_read = async (req, res) => {
+  try {
+    const { senderId, receiverId } = req.params;
+
+    await Chat.updateMany(
+      { sender: senderId, receiver: receiverId, status: { $ne: "read" } },
+      { $set: { status: "read" } }
+    );
+
+    res.json({ success: true, message: "Messages marked as read" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };
