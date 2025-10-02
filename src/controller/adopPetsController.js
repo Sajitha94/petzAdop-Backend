@@ -420,22 +420,22 @@ export const adop_pet_updateRequestStatus = async (req, res) => {
     await sendMailer(request.adopter_email, subject, html);
 
     // If approved, delete the pet post
-    if (status === "approved") {
-      // Delete photos
-      pet.photo.forEach((filename) => {
-        const filePath = path.join("uploads", filename);
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-      });
+    // if (status === "approved") {
+    //   // Delete photos
+    //   pet.photo.forEach((filename) => {
+    //     const filePath = path.join("uploads", filename);
+    //     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    //   });
 
-      // Delete video
-      if (pet.video) {
-        const videoPath = path.join("uploads", pet.video);
-        if (fs.existsSync(videoPath)) fs.unlinkSync(videoPath);
-      }
+    //   // Delete video
+    //   if (pet.video) {
+    //     const videoPath = path.join("uploads", pet.video);
+    //     if (fs.existsSync(videoPath)) fs.unlinkSync(videoPath);
+    //   }
 
-      // Delete from DB
-      await AdopPets.findByIdAndDelete(petId);
-    }
+    //   // Delete from DB
+    //   // await AdopPets.findByIdAndDelete(petId);
+    // }
 
     res.status(200).json({
       status: "success",

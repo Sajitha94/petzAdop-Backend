@@ -35,6 +35,7 @@ export const register = async (req, res) => {
     id: newUser._id,
     role: newUser.usertype,
     name: newUser.name,
+    email: user.email,
   });
   newUser.currentToken = token;
   await newUser.save();
@@ -83,6 +84,7 @@ export const login = async (req, res) => {
       id: user._id,
       role: user.usertype,
       name: user.name,
+      email: user.email,
     });
 
     // ✅ save token in DB (invalidate old one)
