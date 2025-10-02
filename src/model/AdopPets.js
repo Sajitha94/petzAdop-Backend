@@ -9,6 +9,7 @@ const adopPetsSchema = new Schema(
         ref: "Reviews",
       },
     ],
+    petsStatus: { type: Number, enum: [1, -1], default: 1 },
     name: {
       type: String,
       trim: true,
