@@ -4,6 +4,7 @@ import multer from "multer";
 import path from "path";
 import {
   createFosterPet,
+  getAllFosterPets,
   getFosterPetsByOrg,
   requestAdoption,
   updateRequestStatus,
@@ -35,7 +36,8 @@ fosterPetsRouter.post(
   protect,
   updateRequestStatus
 );
-// GET foster pets by organization
+// GET foster pets by organization getAllFosterPets
 fosterPetsRouter.get("/:orgId", getFosterPetsByOrg);
+fosterPetsRouter.get("/", getAllFosterPets);
 
 export default fosterPetsRouter;

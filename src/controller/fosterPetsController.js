@@ -77,6 +77,20 @@ export const createFosterPet = async (req, res) => {
   }
 };
 
+// GET: Get all foster pets
+export const getAllFosterPets = async (req, res) => {
+  try {
+    const pets = await FosterPets.find()
+      .populate("fosterOrgId", "name email") // if you want org details
+      .populate("requests.forster_parent_ID", "name email") // if you want user details for requests
+
+    res.status(200).json({ status: "success", data: pets });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: "error", message: "Server error" });
+  }
+};
+
 // GET: Get foster pets for a specific organization
 export const getFosterPetsByOrg = async (req, res) => {
   try {
