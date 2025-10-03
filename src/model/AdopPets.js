@@ -1,14 +1,22 @@
 import { model, Schema } from "mongoose";
 
+// Subdocument schema for requests
+const requestSchema = new Schema(
+  {
+    adopter_email: { type: String, required: true },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
+  },
+  { timestamps: true } // ✅ will auto-add createdAt + updatedAt
+);
+
 const adopPetsSchema = new Schema(
   {
     post_user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    reviews: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Reviews",
-      },
-    ],
+    reviews: [{ type: Schema.Types.ObjectId, ref: "Reviews" }],
     petsStatus: { type: Number, enum: [1, -1], default: 1 },
     name: {
       type: String,
@@ -16,14 +24,8 @@ const adopPetsSchema = new Schema(
       required: [true, "Name is required"],
       minlength: 3,
     },
-    age: {
-      type: Number,
-      required: [true, "Age is required for registration"],
-    },
-    breed: {
-      type: String,
-      required: [true, "Breed is required"],
-    },
+    age: { type: Number, required: [true, "Age is required for registration"] },
+    breed: { type: String, required: [true, "Breed is required"] },
     size: {
       type: String,
       enum: ["small", "medium", "large"],
@@ -34,38 +36,18 @@ const adopPetsSchema = new Schema(
       enum: ["male", "female"],
       required: [true, "Gender is required"],
     },
-    color: {
-      type: String,
-      required: [true, "Color is required"],
-    },
-    location: {
-      type: String,
-      required: [true, "Location is required"],
-    },
+    color: { type: String, required: [true, "Color is required"] },
+    location: { type: String, required: [true, "Location is required"] },
     medical_history: {
       type: String,
       required: [true, "Medical History is required"],
     },
-    description: {
-      type: String,
-      required: [true, "Description is required"],
-    },
+    description: { type: String, required: [true, "Description is required"] },
     photo: { type: [String], required: [true, "Photo is required"] },
     video: { type: String },
-    requests: [
-      {
-        adopter_email: { type: String, required: true },
-        status: {
-          type: String,
-          enum: ["pending", "approved", "rejected"], // ✅ approved, not accepted
-          default: "pending",
-        },
-
-        createdAt: { type: Date, default: Date.now },
-      },
-    ],
+    requests: [requestSchema], // ✅ using sub-schema
   },
-  { timestamps: true }
+  { timestamps: true } // ✅ for main document
 );
 
 const AdopPets = model("AdopPets", adopPetsSchema);
