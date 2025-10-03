@@ -35,7 +35,7 @@ export const register = async (req, res) => {
     id: newUser._id,
     role: newUser.usertype,
     name: newUser.name,
-    email: user.email,
+    email: newUser.email,
   });
   newUser.currentToken = token;
   await newUser.save();

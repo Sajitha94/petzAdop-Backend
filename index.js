@@ -16,7 +16,9 @@ app.use("/uploads", express.static("uploads"));
 // ===== CORS Configuration =====
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:8888",
   "https://petzadop-frontend.onrender.com",
+  "https://petzadop-backend.onrender.com",
   "https://petzadop-frontend.netlify.app",
 ];
 
