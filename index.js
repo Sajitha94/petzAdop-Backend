@@ -36,7 +36,7 @@ app.use(
 );
 
 // ===== Body Parser =====
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 
 // ===== Routes =====
 app.get("/", (req, res) => {
@@ -52,7 +52,13 @@ app.use(errorHandler);
 
 // ===== Start Server =====
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  connectDB();
-});
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("DB connection failed:", err.message);
+    process.exit(1);
+  });
