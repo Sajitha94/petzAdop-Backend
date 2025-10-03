@@ -329,7 +329,6 @@ export const adop_pet_search = async (req, res) => {
 };
 
 // POST /api/postpet/request
-
 export const adop_pet_request = async (req, res) => {
   try {
     const { petId } = req.body;
@@ -342,8 +341,26 @@ export const adop_pet_request = async (req, res) => {
     );
     if (!pet) return res.status(404).json({ message: "Pet not found" });
 
-    // Take email from logged-in user
-    const adopterEmail = req.user.email; // <-- from token
+    // Logged-in user info
+    const adopterEmail = req.user.email;
+    const adopterId = req.user.id;
+
+    // Prevent user from requesting their own pet
+    if (pet.post_user._id.equals(adopterId)) {
+      return res
+        .status(400)
+        .json({ message: "You cannot request your own pet" });
+    }
+
+    // Prevent duplicate requests from same user
+    const alreadyRequested = pet.requests.find(
+      (r) => r.adopter_email === adopterEmail
+    );
+    if (alreadyRequested) {
+      return res
+        .status(400)
+        .json({ message: "You have already requested this pet" });
+    }
 
     // Save request in DB
     pet.requests.push({ adopter_email: adopterEmail, status: "pending" });
@@ -361,6 +378,8 @@ export const adop_pet_request = async (req, res) => {
       <p>Regards, <br/>PetzAdop App</p>
     `;
 
+    await sendMailer(shelterEmail, subject, html);
+
     res.status(200).json({
       status: "success",
       message: `Request sent and recorded. Shelter notified at ${shelterEmail}`,
@@ -370,8 +389,6 @@ export const adop_pet_request = async (req, res) => {
     console.error("Error sending adoption request:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
-    await sendMailer(shelterEmail, subject, html);
-
 };
 
 // GET /api/postpet/requests
@@ -432,11 +449,9 @@ export const adop_pet_updateRequestStatus = async (req, res) => {
           ? "Request approved, pet deleted and adopter notified"
           : "Request rejected and adopter notified",
     });
-    
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
-    await sendMailer(request.adopter_email, subject, html);
-
+  await sendMailer(request.adopter_email, subject, html);
 };
