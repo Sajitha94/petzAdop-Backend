@@ -47,7 +47,7 @@ export const adop_pet_create = async (req, res) => {
       <p><b>Location:</b> ${location}</p>
       <p>Thank you for using PetzAdop 🐾</p>
     `;
-    await sendMailer(req.user.email, subject, html);
+  sendMailer(req.user.email, subject, html).catch(err => console.error("Email failed:", err));
 
     res.status(201).json({
       success: true,
