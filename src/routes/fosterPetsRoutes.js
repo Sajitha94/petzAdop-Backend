@@ -19,11 +19,7 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) =>
     cb(null, Date.now() + path.extname(file.originalname)),
 });
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max per file
-});
+const upload = multer({ storage ,limits: { fileSize: 5 * 1024 * 1024 }});
 
 // POST foster pet
 fosterPetsRouter.post(
