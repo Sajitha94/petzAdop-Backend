@@ -127,6 +127,7 @@ export const forgotPassword = async (req, res) => {
     user.verifyToken = token;
     user.verifyTokenExpiry = Date.now() + 10 * 60 * 1000;
     await user.save();
+    res.json({ message: "Verification code sent to email" });
 
     // send email
     await sendMailer(
@@ -134,7 +135,6 @@ export const forgotPassword = async (req, res) => {
       "Your Verification Code",
       `<p>Your code is: <b>${token}</b></p>`
     );
-    res.json({ message: "Verification code sent to email" });
   } catch (err) {}
 };
 

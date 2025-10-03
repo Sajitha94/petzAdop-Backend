@@ -65,8 +65,6 @@ export const createFosterPet = async (req, res) => {
       <p>Thank you for using PetzAdop!</p>
     `;
 
-    await sendMailer(user.email, "Foster Pet Created Successfully", html);
-
     res.status(201).json({
       message: "Foster pet posted successfully and email sent",
       pet: newPet,
@@ -75,6 +73,7 @@ export const createFosterPet = async (req, res) => {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
+  await sendMailer(user.email, "Foster Pet Created Successfully", html);
 };
 
 // GET: Get all foster pets
@@ -82,7 +81,7 @@ export const getAllFosterPets = async (req, res) => {
   try {
     const pets = await FosterPets.find()
       .populate("fosterOrgId", "name email") // if you want org details
-      .populate("requests.forster_parent_ID", "name email") // if you want user details for requests
+      .populate("requests.forster_parent_ID", "name email"); // if you want user details for requests
 
     res.status(200).json({ status: "success", data: pets });
   } catch (err) {
@@ -168,6 +167,7 @@ export const updateRequestStatus = async (req, res) => {
       }
       <p>Thank you for using PetzAdop!</p>
     `;
+    res.status(200).json({ message: `Request ${status}`, pet });
 
     // Send email
     await sendMailer(
@@ -175,8 +175,6 @@ export const updateRequestStatus = async (req, res) => {
       `Adoption Request ${status}`,
       html
     );
-
-    res.status(200).json({ message: `Request ${status}`, pet });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
