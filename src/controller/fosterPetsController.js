@@ -24,6 +24,11 @@ export const createFosterPet = async (req, res) => {
       end_date,
     } = req.body;
 
+    if (user.id.equals(fosterOrgId)) {
+      return res.status(400).json({
+        message: "You cannot create a request for your own foster pet",
+      });
+    }
     const photos = req.files?.photos?.map((f) => f.filename) || [];
     const video = req.files?.video ? req.files.video[0].filename : null;
 
@@ -117,6 +122,11 @@ export const requestAdoption = async (req, res) => {
     const pet = await FosterPets.findById(petId);
     if (!pet) return res.status(404).json({ message: "Pet not found" });
 
+    if (pet.fosterOrgId.toString() === user.id) {
+      return res
+        .status(400)
+        .json({ message: "You cannot request your own pet" });
+    }
     // Check if the user already requested
     const alreadyRequested = pet.requests.some(
       (r) => r.requester.toString() === user.id
