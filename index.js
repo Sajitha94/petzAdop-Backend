@@ -8,6 +8,8 @@ import cors from "cors";
 import chatRouter from "./src/routes/chatRouter.js";
 import fosterPetsRouter from "./src/routes/fosterPetsRoutes.js";
 import usersRouter from "./src/routes/userRouter.js";
+import reviewRoutes from "./src/routes/reviewRoutes.js";
+
 dotenv.config();
 
 const app = express();
@@ -48,6 +50,7 @@ app.use("/api/postpet", adopPetsRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/foster-pet", fosterPetsRouter);
 app.use("/api/user-count", usersRouter);
+app.use("/api/reviews", reviewRoutes);
 // ===== Error Handling =====
 app.use(errorHandler);
 

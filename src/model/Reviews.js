@@ -8,13 +8,26 @@ const reviewSchema = new Schema(
       ref: "User",
       required: true,
     },
-    pet: {
+    adopter: {
       type: Schema.Types.ObjectId,
       ref: "AdopPets",
+    },
+    fosterParent: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    requestType: {
+      type: String,
+      enum: ["adoption", "foster"],
       required: true,
     },
     comment: {
       type: String,
+    },
+    rating: {
+      type: Number, // 1–5 scale
+      min: 1,
+      max: 5,
     },
   },
   { timestamps: true }

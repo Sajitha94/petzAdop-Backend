@@ -9,6 +9,11 @@ const requestSchema = new Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    review: {
+      comment: { type: String },
+      rating: { type: Number, min: 0, max: 5 },
+      createdAt: { type: Date },
+    },
   },
   { timestamps: true } // ✅ will auto-add createdAt + updatedAt
 );
