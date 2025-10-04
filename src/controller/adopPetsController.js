@@ -47,7 +47,9 @@ export const adop_pet_create = async (req, res) => {
       <p><b>Location:</b> ${location}</p>
       <p>Thank you for using PetzAdop 🐾</p>
     `;
-
+    sendMailer(req.user.email, subject, html).catch((err) =>
+      console.error("Email failed:", err)
+    );
     res.status(201).json({
       success: true,
       message: "Pet created successfully",
@@ -59,10 +61,6 @@ export const adop_pet_create = async (req, res) => {
       .status(500)
       .json({ success: false, message: error.message || "Server error" });
   }
-
-  sendMailer(req.user.email, subject, html).catch((err) =>
-    console.error("Email failed:", err)
-  );
 };
 
 export const adop_pet_update = async (req, res) => {
@@ -378,13 +376,12 @@ export const adop_pet_request = async (req, res) => {
       <p>Regards, <br/>PetzAdop App</p>
     `;
 
-    await sendMailer(shelterEmail, subject, html);
-
     res.status(200).json({
       status: "success",
       message: `Request sent and recorded. Shelter notified at ${shelterEmail}`,
       petId: pet._id,
     });
+    await sendMailer(shelterEmail, subject, html);
   } catch (err) {
     console.error("Error sending adoption request:", err);
     res.status(500).json({ message: "Server error", error: err.message });
