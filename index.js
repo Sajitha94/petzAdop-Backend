@@ -7,7 +7,7 @@ import adopPetsRouter from "./src/routes/adopPetsRouter.js";
 import cors from "cors";
 import chatRouter from "./src/routes/chatRouter.js";
 import fosterPetsRouter from "./src/routes/fosterPetsRoutes.js";
-
+import usersRouter from "./src/routes/userRouter.js";
 dotenv.config();
 
 const app = express();
@@ -47,6 +47,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/postpet", adopPetsRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/foster-pet", fosterPetsRouter);
+app.use("/api/user-count", usersRoute);
 // ===== Error Handling =====
 app.use(errorHandler);
 
