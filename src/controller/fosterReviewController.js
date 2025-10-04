@@ -82,3 +82,17 @@ export const getFosterReviews = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+export const getFosterOrgReviews = async (req, res) => {
+  try {
+    const { orgId } = req.params; // get org ID from URL
+
+    const reviews = await FosterReview.find({ fosterOrgId: orgId })
+      .populate("fosterParentId", "name email") // show reviewer info
+      .populate("petId", "name photos"); // show pet info
+
+    res.status(200).json({ status: "success", reviews });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: "error", message: "Server error" });
+  }
+};

@@ -2,6 +2,7 @@ import express from "express";
 import { protect } from "../middleware/authMiddleware.js";
 import {
   createFosterReview,
+  getFosterOrgReviews,
   getFosterReviews,
 } from "../controller/fosterReviewController.js";
 
@@ -9,5 +10,6 @@ const router = express.Router();
 
 router.post("/", protect, createFosterReview);
 router.get("/", protect, getFosterReviews);
+router.get("/org/:orgId", protect, getFosterOrgReviews);
 
 export default router;
