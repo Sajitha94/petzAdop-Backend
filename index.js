@@ -47,7 +47,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/postpet", adopPetsRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/foster-pet", fosterPetsRouter);
-app.use("/api/user-count", usersRoute);
+app.use("/api/user-count", usersRouter);
 // ===== Error Handling =====
 app.use(errorHandler);
 
