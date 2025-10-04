@@ -9,7 +9,7 @@ import chatRouter from "./src/routes/chatRouter.js";
 import fosterPetsRouter from "./src/routes/fosterPetsRoutes.js";
 import usersRouter from "./src/routes/userRouter.js";
 import reviewRoutes from "./src/routes/reviewRoutes.js";
-
+import fosterReviewRoutes from "./src/routes/fosterReviewRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -51,6 +51,7 @@ app.use("/api/chat", chatRouter);
 app.use("/api/foster-pet", fosterPetsRouter);
 app.use("/api/user-count", usersRouter);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/foster-reviews", fosterReviewRoutes);
 // ===== Error Handling =====
 app.use(errorHandler);
 
