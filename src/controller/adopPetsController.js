@@ -140,7 +140,7 @@ export const adop_pet_list = async (req, res) => {
 export const adop_pet_getBreeds = async (req, res) => {
   try {
     // Get unique breed values
-    const breeds = await AdopPets.distinct("breed");
+    const breeds = await AdopPets.distinct("breed", { petsStatus: 1 });
 
     res.status(200).json({
       status: "success",
@@ -268,7 +268,7 @@ export const adop_pet_search = async (req, res) => {
       limit = 6,
     } = req.query;
 
-    const query = {};
+    const query = { petsStatus: 1 };
 
     // Free-text search
     if (search?.trim()) {
