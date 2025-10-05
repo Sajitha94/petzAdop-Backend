@@ -21,7 +21,7 @@ const requestSchema = new Schema(
 const adopPetsSchema = new Schema(
   {
     post_user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    reviews: [{ type: Schema.Types.ObjectId, ref: "Reviews" }],
+    reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
     petsStatus: { type: Number, enum: [1, -1], default: 1 },
     name: {
       type: String,

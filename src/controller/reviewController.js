@@ -1,4 +1,4 @@
-import Review from "../model/Reviews.js";
+import Review from "../model/Review.js";
 import AdopPets from "../model/AdopPets.js";
 
 // POST /api/reviews
@@ -8,7 +8,9 @@ export const createReview = async (req, res) => {
     const userId = req.user.id;
 
     if (!comment || !rating) {
-      return res.status(400).json({ message: "Comment and rating are required" });
+      return res
+        .status(400)
+        .json({ message: "Comment and rating are required" });
     }
 
     // Save review to Reviews collection

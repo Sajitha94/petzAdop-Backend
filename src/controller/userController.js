@@ -1,7 +1,7 @@
 import User from "../model/User.js";
 import AdopPets from "../model/AdopPets.js";
 import FosterReview from "../model/FosterReview.js";
-import Review from "../model/Reviews.js";
+import Review from "../model/Review.js";
 
 export const get_user_count = async (req, res) => {
   try {
@@ -26,65 +26,103 @@ export const get_user_count = async (req, res) => {
   }
 };
 
-export const getUserRating = async (req, res) => {
+// userController.js
+export const getUserRatingAndComments = async (req, res) => {
   try {
     const { userId } = req.params;
 
     let totalRating = 0;
     let totalReviews = 0;
+    let allComments = [];
 
-    // 1️⃣ Reviews from Review table
-    const userReviews = await Review.find({ user: userId });
+    // 1️⃣ Reviews from Review table (user)
+    const userReviews = await Review.find({ user: userId }).populate(
+      "adopter",
+      "name"
+    );
 
     userReviews.forEach((r) => {
       if (r.rating) {
         totalRating += r.rating;
         totalReviews += 1;
       }
+      if (r.comment) {
+        allComments.push({
+          comment: r.comment,
+          rating: r.rating,
+          type: r.requestType || "adoption",
+          pet: r.adopter?.name || null,
+          source: "Review",
+          createdAt: r.createdAt,
+        });
+      }
     });
 
-    // 2️⃣ Reviews from FosterReview table
-    const fosterReviews = await FosterReview.find({ fosterParentId: userId });
+    // 2️⃣ FosterReviews
+    const fosterReviews = await FosterReview.find({ fosterParentId: userId })
+      .populate("petId", "name")
+      .populate("fosterOrgId", "name");
 
     fosterReviews.forEach((r) => {
       if (r.rating) {
         totalRating += r.rating;
         totalReviews += 1;
       }
-    });
-
-    // 3️⃣ Optionally: Reviews on user's pets
-    const pets = await AdopPets.find({ post_user: userId });
-
-    pets.forEach((pet) => {
-      if (pet.review && pet.review.rating) {
-        totalRating += pet.review.rating;
-        totalReviews += 1;
-      }
-
-      if (pet.reviews && pet.reviews.length > 0) {
-        pet.reviews.forEach((r) => {
-          totalRating += r.rating;
-          totalReviews += 1;
+      if (r.comment) {
+        allComments.push({
+          comment: r.comment,
+          rating: r.rating,
+          pet: r.petId?.name || null,
+          organization: r.fosterOrgId?.name || null,
+          source: "FosterReview",
+          createdAt: r.createdAt,
         });
       }
+    });
 
-      if (pet.requests && pet.requests.length > 0) {
-        pet.requests.forEach((req) => {
-          if (req.review && req.review.rating) {
-            totalRating += req.review.rating;
-            totalReviews += 1;
+    // 3️⃣ Pet reviews (only comments)
+    const pets = await AdopPets.find({ post_user: userId }).populate({
+      path: "reviews",
+      select: "comment createdAt",
+    });
+
+    pets.forEach((pet) => {
+      if (pet.reviews && pet.reviews.length > 0) {
+        pet.reviews.forEach((r) => {
+          if (r.comment) {
+            allComments.push({
+              comment: r.comment,
+              rating: null,
+              pet: pet.name,
+              source: "PetReview",
+              createdAt: r.createdAt,
+            });
           }
         });
       }
     });
 
-    // 4️⃣ Calculate average
-    const averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
+    // Group by pet
+    const reviewsByPet = {};
+    allComments.forEach((c) => {
+      const petName = c.pet || "Unknown Pet";
+      if (!reviewsByPet[petName]) {
+        reviewsByPet[petName] = [];
+      }
+      reviewsByPet[petName].push(c);
+    });
 
+    const petReviewsArray = Object.keys(reviewsByPet).map((petName) => ({
+      petName,
+      reviews: reviewsByPet[petName],
+    }));
+
+    // Response
     res.status(200).json({
-      averageRating: averageRating.toFixed(1),
+      averageRating:
+        totalReviews > 0 ? (totalRating / totalReviews).toFixed(1) : "0",
       totalReviews,
+      petReviews: petReviewsArray,
     });
   } catch (err) {
     console.error(err);

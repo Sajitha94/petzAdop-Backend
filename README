@@ -1,0 +1,67 @@
+# 🐾 PetzAdop Backend — Pet Adoption Platform
+
+## 🌐 Live API
+- **Backend (Render):** [https://petzadop-backend.onrender.com](https://petzadop-backend.onrender.com)  
+
+## 💻 GitHub Repository
+- **Backend Repo:** [https://github.com/Sajitha94/petzAdop-Backend](https://github.com/Sajitha94/petzAdop-Backend)  
+
+---
+
+## 📘 Overview
+The **PetzAdop Backend** is a **Node.js & Express** REST API that powers the PetzAdop platform.  
+It handles:
+
+- Pet management (create, update, delete, list)
+- Adoption and fostering applications
+- User authentication and profile management
+- Reviews, ratings, and comments
+- Email verification and notifications
+- Real-time chat between adopters and organizations
+
+The backend is connected to a **MongoDB database** and uses **JWT for authentication**.
+
+---
+
+## 🚀 Key Features
+
+### 🐶 Pet Management
+- CRUD operations for pet profiles
+- Upload photos/videos
+- Search and filter pets by breed, age, size, and location
+
+### 📝 Application Management
+- Submit adoption/foster requests
+- Approve or reject applications
+- Track request status: `Pending → Accepted → Rejected`
+- Schedule meet & greet appointments
+
+### 👤 User Management
+- JWT-based authentication
+- User roles: adopter, shelter, foster parent
+- Profile editing, password reset, and profile picture upload
+
+### 🌟 Reviews & Ratings
+- Users can leave reviews and ratings for shelters and foster organizations
+- Supports comment, rating, and review type (adoption/fostering)
+- Average ratings are calculated per user/organization
+
+### 💬 Messaging System
+- Real-time chat between adopters and organizations
+- JWT-secured endpoints for chat messages
+
+### 📧 Email Verification
+
+> ⚠️ **Note:** Email verification works **only on localhost**.  
+> After deploying the backend (e.g., on Render), email sending **does not work** due to SMTP/environment restrictions.  
+> This feature is intended for testing in the local environment only.  
+> The issue has been reported on the **GUVI platform** and is still pending resolution.
+
+---
+
+## 🛠 Installation & Setup
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/Sajitha94/petzAdop-Backend.git
+cd petzAdop-Backend
