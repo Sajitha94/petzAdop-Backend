@@ -12,10 +12,7 @@ const reviewSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "AdopPets",
     },
-    fosterParent: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
+   
     requestType: {
       type: String,
       enum: ["adoption", "foster"],

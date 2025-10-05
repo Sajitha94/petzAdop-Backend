@@ -1,5 +1,7 @@
 import User from "../model/User.js";
 import AdopPets from "../model/AdopPets.js";
+import FosterReview from "../model/FosterReview.js";
+import Review from "../model/Reviews.js";
 
 export const get_user_count = async (req, res) => {
   try {
@@ -28,19 +30,38 @@ export const getUserRating = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const pets = await AdopPets.find({ post_user: userId });
-
     let totalRating = 0;
     let totalReviews = 0;
 
+    // 1️⃣ Reviews from Review table
+    const userReviews = await Review.find({ user: userId });
+
+    userReviews.forEach((r) => {
+      if (r.rating) {
+        totalRating += r.rating;
+        totalReviews += 1;
+      }
+    });
+
+    // 2️⃣ Reviews from FosterReview table
+    const fosterReviews = await FosterReview.find({ fosterParentId: userId });
+
+    fosterReviews.forEach((r) => {
+      if (r.rating) {
+        totalRating += r.rating;
+        totalReviews += 1;
+      }
+    });
+
+    // 3️⃣ Optionally: Reviews on user's pets
+    const pets = await AdopPets.find({ post_user: userId });
+
     pets.forEach((pet) => {
-      // If pet has a single review object
       if (pet.review && pet.review.rating) {
         totalRating += pet.review.rating;
         totalReviews += 1;
       }
 
-      // If pet has a reviews array
       if (pet.reviews && pet.reviews.length > 0) {
         pet.reviews.forEach((r) => {
           totalRating += r.rating;
@@ -48,7 +69,6 @@ export const getUserRating = async (req, res) => {
         });
       }
 
-      // ✅ Check reviews inside requests array
       if (pet.requests && pet.requests.length > 0) {
         pet.requests.forEach((req) => {
           if (req.review && req.review.rating) {
@@ -59,9 +79,13 @@ export const getUserRating = async (req, res) => {
       }
     });
 
-    const avgRating = totalReviews > 0 ? totalRating / totalReviews : 0;
+    // 4️⃣ Calculate average
+    const averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
 
-    res.status(200).json({ averageRating: avgRating.toFixed(1), totalReviews });
+    res.status(200).json({
+      averageRating: averageRating.toFixed(1),
+      totalReviews,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
