@@ -1,14 +1,29 @@
 # 🐾 PetzAdop Backend — Pet Adoption Platform
 
 ## 🌐 Live API
-- **Backend (Render):** [https://petzadop-backend.onrender.com](https://petzadop-backend.onrender.com)  
+
+- **Backend (Render):** [https://petzadop-backend.onrender.com](https://petzadop-backend.onrender.com)
 
 ## 💻 GitHub Repository
-- **Backend Repo:** [https://github.com/Sajitha94/petzAdop-Backend](https://github.com/Sajitha94/petzAdop-Backend)  
+
+- **Backend Repo:** [https://github.com/Sajitha94/petzAdop-Backend](https://github.com/Sajitha94/petzAdop-Backend)
 
 ---
 
+## Login Credentials
+
+### 🧍‍♀️ Adopter User
+
+- **Username:** sajithasv94@gmail.com
+- **Password:** saji123
+
+### 🏠 Foster Organization
+
+- **Username:** sajithasivakumar31@gmail.com
+- **Password:** saji123
+
 ## 📘 Overview
+
 The **PetzAdop Backend** is a **Node.js & Express** REST API that powers the PetzAdop platform.  
 It handles:
 
@@ -26,27 +41,32 @@ The backend is connected to a **MongoDB database** and uses **JWT for authentica
 ## 🚀 Key Features
 
 ### 🐶 Pet Management
+
 - CRUD operations for pet profiles
 - Upload photos/videos
 - Search and filter pets by breed, age, size, and location
 
 ### 📝 Application Management
+
 - Submit adoption/foster requests
 - Approve or reject applications
 - Track request status: `Pending → Accepted → Rejected`
 - Schedule meet & greet appointments
 
 ### 👤 User Management
+
 - JWT-based authentication
 - User roles: adopter, shelter, foster parent
 - Profile editing, password reset, and profile picture upload
 
 ### 🌟 Reviews & Ratings
+
 - Users can leave reviews and ratings for shelters and foster organizations
 - Supports comment, rating, and review type (adoption/fostering)
 - Average ratings are calculated per user/organization
 
 ### 💬 Messaging System
+
 - Real-time chat between adopters and organizations
 - JWT-secured endpoints for chat messages
 
@@ -62,6 +82,8 @@ The backend is connected to a **MongoDB database** and uses **JWT for authentica
 ## 🛠 Installation & Setup
 
 1. **Clone the repository**
+
 ```bash
 git clone https://github.com/Sajitha94/petzAdop-Backend.git
 cd petzAdop-Backend
+```
