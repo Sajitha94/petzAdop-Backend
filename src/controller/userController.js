@@ -39,7 +39,6 @@ export const getUserRatingAndComments = async (req, res) => {
     const userReviews = await Review.find({ user: userId })
       .populate("adopter", "name")
       .populate("user", "name");
-    console.log(userReviews, "ude");
 
     userReviews.forEach((r) => {
       if (r.rating) {

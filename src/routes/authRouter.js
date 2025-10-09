@@ -24,7 +24,15 @@ authRouter.post("/verify", verifyUser);
 authRouter.post("/setPassword", setPassword);
 authRouter.post("/forgotPassword", forgotPassword);
 authRouter.post("/toggle", protect, toggleFavorite);
+authRouter.get("/profile/me", protect, async (req, res) => {
+  try {
+    res.json({ status: "success", user: req.user });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
 authRouter.get("/profile/:id", getProfileById);
+
 authRouter.get("/foster-users", getFosterUsers);
 authRouter.put(
   "/update/:id",
