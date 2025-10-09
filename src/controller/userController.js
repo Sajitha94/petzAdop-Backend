@@ -36,10 +36,10 @@ export const getUserRatingAndComments = async (req, res) => {
     let allComments = [];
 
     // 1️⃣ Reviews from Review table (user)
-    const userReviews = await Review.find({ user: userId }).populate(
-      "adopter",
-      "name"
-    );
+    const userReviews = await Review.find({ user: userId })
+      .populate("adopter", "name")
+      .populate("user", "name");
+    console.log(userReviews, "ude");
 
     userReviews.forEach((r) => {
       if (r.rating) {
@@ -52,6 +52,7 @@ export const getUserRatingAndComments = async (req, res) => {
           rating: r.rating,
           type: r.requestType || "adoption",
           pet: r.adopter?.name || null,
+          reviewerName: r.user?.name || null,
           source: "Review",
           createdAt: r.createdAt,
         });
