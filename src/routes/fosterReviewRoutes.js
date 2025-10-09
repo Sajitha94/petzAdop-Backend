@@ -9,7 +9,8 @@ import {
 const router = express.Router();
 
 router.post("/", protect, createFosterReview);
-router.get("/",  getFosterReviews);
-router.get("/org/:orgId",  getFosterOrgReviews);
+router.get("/", protect, getFosterReviews);
+
+router.get("/org/:orgId", getFosterOrgReviews);
 
 export default router;
